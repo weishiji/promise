@@ -115,7 +115,7 @@ var test1 = function(cb){
   cb('hello world')
 }
 var p = Promise();
-p.all([test1,test(2),test1,test(3)]).then(function(){
+p.all([test1,test(2),test1,test(3)]).when(test('111')).then(function(){
 
 }).when(test(4)).when(test(5)).then()
 
