@@ -44,15 +44,21 @@ var Promise = (function(){
       ,taskCallback : function(param){
         __this.count++;
         __this.statusStr = 'success';  
+        //拍断有多个then函数的时候，每次只执行then之前的任务
         if(__this.count === __this.thenIndex[0]){
           __this.thenIndex.splice(0,1);
-          __this.statusStr = 'pending';
+          __this.thenIndex.length === 0 ? __this.statusStr = 'pending' : __this.statusStr = 'success';
+          _private.thenCallback();
         }
         
-        console.log(__this.count,__this.thenIndex,'this is param')
+        console.log(__this.count,__this.thenIndex,param,'this is param')
         setTimeout(function(){
           _private.doAction();  
         },0)
+      }
+      ,thenCallback : function(){
+        var thenFun = __this.thenArr.splice(0,1)[0];
+        thenFun.call(this,123)
       }
       ,nextAction : function(){
         if(_private.isFun(task)){
@@ -65,6 +71,7 @@ var Promise = (function(){
   function P(){
     this.tasksArr = [];
     this.thenIndex = [];
+    this.thenArr = [];
     this.statusStr = 'success' // success | pending | wating
     this.count = 0;
     this.isStart = false;
@@ -86,6 +93,10 @@ var Promise = (function(){
   }
   P.prototype.then = function(fun){
     this.thenIndex.push(this.tasksArr.length)
+    if(_private.isFun(fun)){
+      this.thenArr.push(fun);
+    }
+
     setTimeout(function(){
       if(!this.isStart) _private.doAction();  
       this.isStart = true;
@@ -115,9 +126,9 @@ var test1 = function(cb){
   cb('hello world')
 }
 var p = Promise();
-p.all([test1,test(2),test1,test(3)]).when(test('111')).then(function(){
-
-}).when(test(4)).when(test(5)).then()
+p.all([test1,test(2),test1,test(3)]).when(test('111')).then(function(data){
+  console.log(data)
+}).when(test(4)).when(test(5))//.then()
 
 
 
