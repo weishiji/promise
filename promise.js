@@ -43,15 +43,20 @@ var Promise = (function(){
       }
       ,taskCallback : function(param){
         __this.count++;
-        __this.statusStr = 'success';
-        console.log(param,'this is param')
+        __this.statusStr = 'success';  
+        if(__this.count === __this.thenIndex[0]){
+          __this.thenIndex.splice(0,1);
+          __this.statusStr = 'pending';
+        }
+        
+        console.log(__this.count,__this.thenIndex,'this is param')
         setTimeout(function(){
           _private.doAction();  
         },0)
       }
       ,nextAction : function(){
         if(_private.isFun(task)){
-          task.call(this,_private.taskCallback)
+          task.call(this,_private.taskCallback);
         }
       }
     }
@@ -59,6 +64,7 @@ var Promise = (function(){
 
   function P(){
     this.tasksArr = [];
+    this.thenIndex = [];
     this.statusStr = 'success' // success | pending | wating
     this.count = 0;
     this.isStart = false;
@@ -79,7 +85,7 @@ var Promise = (function(){
     return this;
   }
   P.prototype.then = function(fun){
-    console.log(this.tasksArr.length)
+    this.thenIndex.push(this.tasksArr.length)
     setTimeout(function(){
       if(!this.isStart) _private.doAction();  
       this.isStart = true;
@@ -109,7 +115,7 @@ var test1 = function(cb){
   cb('hello world')
 }
 var p = Promise();
-p.all([test(1),test(2),test1,test(3)]).then(function(){
+p.all([test1,test(2),test1,test(3)]).then(function(){
 
 }).when(test(4)).when(test(5)).then()
 
