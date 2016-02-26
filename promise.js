@@ -24,8 +24,6 @@ Promise.prototype.doAction = function(){
 }
 */
 var Promise = (function(){
-  var allTasks;//缓存所有的任务
-  var taskIndex;//调用then函数的时候，执行task里的任务下标
   var _private;
   //私有函数
   var privateFun = (function(){
@@ -89,9 +87,6 @@ var Promise = (function(){
     return this;
   }
   return function(){
-    allTasks = [];
-    taskIndex = 0;
-
     var p = new P();
     _private = privateFun.call(p)
     return p;
