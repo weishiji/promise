@@ -12,6 +12,8 @@ var test = function(param){
 var test1 = function(cb){
   cb('hello world')
 }
-p.all([test1,test(2),test1,test(3)]).stop().when(test('111')).then(function(data){
+p.all([test1,test(2),test1,test(3)]).when(test('111')).then(function(data){
   console.log(data)
-}).when(test(4)).when(test(5)).then()
+}).when(test(4)).when(test(5)).then(function(data){
+	console.log(data,'this is then second')
+})
